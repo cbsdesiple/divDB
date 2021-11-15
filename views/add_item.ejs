@@ -1,0 +1,82 @@
+<%- include("partials/header") %>
+    <h1>Add Item</h1>
+    <form action="/add_item" method="POST">
+      <div class="form-row">
+        <div class="form-group col-md-12">
+          <label for="title">Title</label>
+          <input type="text" class="form-control" id="title" name="title">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-5">
+          <label for="speakerfname">Speaker First Name</label>
+          <input type="text" class="form-control" id="speakerfname" name="fname">
+        </div>
+        <div class="form-group col-md-5">
+          <label for="speakerlname">Speaker Last Name</label>
+          <input type="text" class="form-control" id="speakerlname" name="lname">
+        </div>
+        <div class="form-group col-md-2">
+          <label for="suffix">Suffix</label>
+          <select id="suffix" class="form-control" name="suffix">
+          <option selected> </option>
+            <option>Jr.</option>
+            <option>Sr.</option>
+            <option>II</option>
+            <option>III</option>
+            <option>IV</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="event">Event/Location</label>
+          <input class=" form-control" list="events" id="event" name="event" />
+          <datalist id="events">
+            <% for(let i = 0; i < events.length; i++){ %>
+              <option><%=events[i].item_location_event%></option>
+            <% } %>
+          </datalist>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="subject">Subject</label>
+          <select id="subject" class="form-control" name="subject">
+            <option selected>Choose...</option>
+            <% for(let i = 0; i < subjects.length; i++){ %>
+              <option><%=subjects[i].subject%></option>
+            <% } %>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-2">
+          <label for="barcode">Barcode</label>
+          <input type="text" class="form-control" id="barcode" name="barcode">
+        </div>
+        <div class="form-group col-md-2">
+          <label for="mediaType">Media Type</label>
+          <select id="mediaType" class="form-control" name="mediaType">
+            <option selected>Choose...</option>
+            <% for(let i = 0; i < mediaTypes.length; i++){ %>
+              <option><%=mediaTypes[i].media_type%></option>
+            <% } %>
+          </select>
+        </div>
+        <div class="form-group col-md-2">
+          <label for="date">Event Date</label>
+            <input type="date" class="form-control" id="date" name="date">
+          </div>
+        </div>
+
+
+        <div class="form-row">
+          <div class="col-md-12">
+            <button type="submit" class="btn btn-dark">Add Item</button>
+          </div>
+        </div>
+      </form>
+
+<%- include("partials/footer") %>

@@ -1,0 +1,23 @@
+<%- include("partials/header") %>
+    <h1>Divinity Library Checkout</h1>
+    <div class="row">
+      <div class="col-sm-8">
+        <div class="card">
+          <div class="card-body">
+
+            <!-- Makes POST request to /checkout route -->
+            <form action="/checkout" method="POST">
+              <div class="form-group">
+                <label for="search">User Search</label>
+                <input type="search" class="form-control" name="search_name">
+              </div>
+              <button type="submit" class="btn btn-dark">Search</button>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

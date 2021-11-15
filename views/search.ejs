@@ -1,0 +1,11 @@
+<%- include("partials/header") %>
+<h2>Search Results</h2>
+
+<ul>
+<% for(let i = 0; i < items.length; i++){ %>
+  <li><%=items[i].user_fname%> <%=items[i].user_lname%></li>
+<% } %>
+</ul>
+
+
+<%- include("partials/footer") %>
