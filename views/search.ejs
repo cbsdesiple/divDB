@@ -1,11 +1,14 @@
 <%- include("partials/header") %>
-<h2>Search Results</h2>
 
-<ul>
-<% for(let i = 0; i < items.length; i++){ %>
-  <li><%=items[i].user_fname%> <%=items[i].user_lname%></li>
-<% } %>
-</ul>
+<h3> Search Results</h3>
+
+<div class="card" style="width: 18rem;">
+  <ul class= "list-group list-group-flush">
+  <% for(let i = 0; i < items.length; i++){ %>
+    <li class="list-group-item"><a class="link" href="/users/<%=items[i].user_student_id%>"><%=items[i].user_fname%> <%=items[i].user_lname%></a></li>
+  <% } %>
+  </ul>
+</div>
 
 
 <%- include("partials/footer") %>

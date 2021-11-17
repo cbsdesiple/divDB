@@ -40,15 +40,15 @@ client.connect();
 // ));
 
 //Get and Post Routes
-app.get("/", function(req, res){
+app.get("/", (req, res)=>{
   res.render("index");
 })
 
-app.get("/checkout", function(req, res){
+app.get("/checkout", (req, res)=>{
   res.render("checkout");
 })
 
-app.post("/checkout", function(req, res){
+app.post("/checkout", (req, res)=>{
   const duedate = new Date(Date.now() + 12096e5)
   const text = "SELECT * FROM users WHERE user_fname ILIKE $1 OR user_lname ILIKE $1"
   const values = ["%" + req.body.search_name + "%"]
@@ -62,11 +62,11 @@ app.post("/checkout", function(req, res){
   })
 })
 
-app.get("/return", function(req, res){
+app.get("/return", (req, res)=>{
   res.render("return");
 })
 
-app.post("/return", function(req, res){
+app.post("/return", (req, res) => {
   const text = "SELECT * FROM items WHERE barcode = $1"
   const values = [req.body.barcode]
   client.query(text, values, (err, result) => {
@@ -79,7 +79,7 @@ app.post("/return", function(req, res){
   })
 })
 
-app.get("/add_item", function (req, res) {
+app.get("/add_item", (req, res) => {
   client.query("SELECT DISTINCT item_location_event FROM items ORDER BY item_location_event ASC;", (err, result) => {
     if (err) {
       console.log(err.stack)
@@ -105,7 +105,7 @@ app.get("/add_item", function (req, res) {
 })
 
 
-app.post("/add_item", function (req, res){
+app.post("/add_item", (req, res) => {
   var title = req.body.title
   var fname = req.body.fname
   var lname = req.body.lname
@@ -127,21 +127,20 @@ app.post("/add_item", function (req, res){
   })
 })
 
-app.get("/add_user", function (req, res) {
+app.get("/add_user", (req, res) => {
   const text = "SELECT * FROM states;"
   client.query(text, (err, result) => {
     if (err) {
       console.log(err.stack)
     } else {
       states = (result.rows);
-      console.log(states);
       res.render("add_user", {states:states});
     }
   })
 
 })
 
-app.post("/add_user", function(req,res){
+app.post("/add_user", (req,res) => {
   var fname = req.body.fname
   var lname = req.body.lname
   var street = req.body.street
@@ -162,14 +161,27 @@ app.post("/add_user", function(req,res){
   })
 })
 
-app.get("/login", function(req,res){
-  res.render("login")
+app.get("/login", (req,res) => {
+  res.render("login");
 })
 
-app.post("/login", function(req, res){
-  var username = req.body.username
-  var password = req.body.password
-  res.send(username + password)
+app.post("/login", (req, res)=>{
+  var username = req.body.username;
+  var password = req.body.password;
+  res.send(username + password);
+})
+
+app.get("/users/:user_student_id", (req,res)=>{
+  const values = [req.params.user_student_id];
+  const text = "SELECT user_fname, user_lname, item_title, item_media_type, item_due_date FROM items JOIN users on item_checkedout_to = user_student_id WHERE item_checkedout_to = $1;";
+  client.query(text, values, (err, result) => {
+    if (err) {
+      console.log(err.stack)
+    } else {
+      user = (result.rows);
+      res.render("user", {user:user})
+    }
+  })
 })
 
 

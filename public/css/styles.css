@@ -15,6 +15,14 @@ select{
   color: black;
 }
 
+label{
+  font-size: 2em;
+}
+
+.card-header{
+  background: #28425f;
+}
+
 .btn{
   color:black;
 }
@@ -24,15 +32,24 @@ select{
   padding-bottom: 30px;
 }
 
-.link{
-  /* color: white; */
+
+.link:hover{
+  color:white;
+  text-decoration: underline;
+}
+
+.link-main{
   font-size: 3em;
   margin-top: 5%;
   margin-left: 20%;
 }
 
-.link:hover{
+.link-main:hover{
   color:white;
+}
+
+.list-group-item{
+  background-color: #28425f;
 }
 
 .logo{
@@ -82,7 +99,6 @@ select{
   }
 
   .links{
-    /* margin-left: : 10%; */
     text-align: center;
     margin-bottom: 10%;
   }
