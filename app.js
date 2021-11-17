@@ -49,7 +49,6 @@ app.get("/checkout", (req, res)=>{
 })
 
 app.post("/checkout", (req, res)=>{
-  const duedate = new Date(Date.now() + 12096e5)
   const text = "SELECT * FROM users WHERE user_fname ILIKE $1 OR user_lname ILIKE $1"
   const values = ["%" + req.body.search_name + "%"]
   client.query(text, values, (err, result) => {
@@ -172,14 +171,39 @@ app.post("/login", (req, res)=>{
 })
 
 app.get("/users/:user_student_id", (req,res)=>{
-  const values = [req.params.user_student_id];
+  const user_id = req.params.user_student_id;
+  const values = [user_id];
   const text = "SELECT user_fname, user_lname, item_title, item_media_type, item_due_date FROM items JOIN users on item_checkedout_to = user_student_id WHERE item_checkedout_to = $1;";
   client.query(text, values, (err, result) => {
     if (err) {
       console.log(err.stack)
     } else {
       user = (result.rows);
-      res.render("user", {user:user})
+      res.render("user", {user:user, values:values})
+    }
+  })
+})
+
+app.post("/users/:user_student_id", (req, res) => {
+  const duedate = new Date(Date.now() + 12096e5);
+  const today = new Date(Date.now());
+  const user_id = req.params.user_student_id;
+  const values = [parseInt(user_id), duedate, today, req.body.barcode];
+  const text = "UPDATE items SET item_checkedout_to = $1, item_due_date = $2, item_checkout_date = $3, item_checkout_status = 'true' WHERE item_barcode = $4;"
+  client.query(text, values, (err, result) => {
+    if (err) {
+      console.log(err.stack)
+    } else {
+      const values = [user_id];
+      const text = "SELECT user_fname, user_lname, item_title, item_media_type, item_due_date FROM items JOIN users on item_checkedout_to = user_student_id WHERE item_checkedout_to = $1;";
+      client.query(text, values, (err, result) => {
+        if (err) {
+          console.log(err.stack)
+        } else {
+          user = (result.rows);
+          res.render("user", {user:user, values:values})
+        }
+      })
     }
   })
 })

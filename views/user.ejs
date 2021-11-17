@@ -18,15 +18,24 @@
       <% for(let i = 0; i < user.length; i++){ %>
         <tr>
           <th scope="row"><%=user[i].item_title%></th>
-          <td><%=user[i].item_media_type%></td>
-          <td><%=user[i].item_due_date%></td>
+          <td>s<%=user[i].item_media_type%></td>
+          <td><%=user[i].item_due_date.toLocaleDateString("en-US")%></td>
         </tr>
-
       <% } %>
-
     </tbody>
   </table>
 </div>
+
+<div class="container">
+  <form action="/users/<%=values%>" method="POST">
+    <div class="form-group">
+      <label for="search">Check Out Barcode</label>
+      <input type="search" class="form-control" name="barcode">
+    </div>
+    <button type="submit" class="btn btn-light">Search</button>
+  </form>
+</div>
+
 
 
 <%- include("partials/footer") %>
