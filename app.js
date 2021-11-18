@@ -2,13 +2,14 @@ const express = require("express");
 const bodyParser = require('body-parser')
 const { Client } = require('pg')
 const app = express();
+const fs = require("fs");
+const csv = require("fast-csv");
 
 //ejs Setup
 app.set("view engine", "ejs");
 
 //PG Setup
 const {clientConfig} = require('./config.js');
-
 const client = new Client(clientConfig)
 
 //use stylesheet
@@ -19,6 +20,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 //connect to postgres
 client.connect();
+
+//setup for creating CSV file
+const ws = fs.createWriteStream("overdue_items.csv");
 
 //Enable and Configure Passport
 // var passport = require('passport')
@@ -41,8 +45,23 @@ client.connect();
 
 //Get and Post Routes
 app.get("/", (req, res)=>{
-  res.render("index");
+  client.query("SELECT item_title, item_due_date, user_fname, user_lname, user_email FROM items JOIN users ON user_student_id = item_checkedout_to WHERE item_due_date < current_date;", (err, result) => {
+    if (err) {
+      console.log(err.stack)
+    } else {
+      items = (result.rows);
+      // csv.write(items, {headers:true}).pipe(ws)
+      // .on("finish", function() {
+      //   console.log(`Postgres table overdue_items exported to CSV file successfully.`);
+      // });
+      res.render("index", {items:items});
+
+    }
+  })
+
 })
+
+
 
 app.get("/checkout", (req, res)=>{
   res.render("checkout");
@@ -173,12 +192,13 @@ app.post("/login", (req, res)=>{
 app.get("/users/:user_student_id", (req,res)=>{
   const user_id = req.params.user_student_id;
   const values = [user_id];
-  const text = "SELECT user_fname, user_lname, item_title, item_media_type, item_due_date FROM items JOIN users on item_checkedout_to = user_student_id WHERE item_checkedout_to = $1;";
+  const text = "SELECT user_fname, user_lname, item_title, item_media_type, item_due_date FROM users LEFT JOIN items on item_checkedout_to = user_student_id WHERE user_student_id = $1;";
   client.query(text, values, (err, result) => {
     if (err) {
       console.log(err.stack)
     } else {
       user = (result.rows);
+      console.log(user)
       res.render("user", {user:user, values:values})
     }
   })
@@ -195,7 +215,7 @@ app.post("/users/:user_student_id", (req, res) => {
       console.log(err.stack)
     } else {
       const values = [user_id];
-      const text = "SELECT user_fname, user_lname, item_title, item_media_type, item_due_date FROM items JOIN users on item_checkedout_to = user_student_id WHERE item_checkedout_to = $1;";
+      const text = "SELECT user_fname, user_lname, item_title, item_media_type, item_due_date FROM users LEFT JOIN items on item_checkedout_to = user_student_id WHERE user_student_id = $1;";
       client.query(text, values, (err, result) => {
         if (err) {
           console.log(err.stack)

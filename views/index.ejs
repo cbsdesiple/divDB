@@ -15,7 +15,34 @@
 
       </div>
     </section>
-
+    <section>
+      <div class="container-fluid">
+        <!-- Generate overdue items if there are any -->
+        <% if(items != ""){%>
+          <h2>Items Past Due</h2>
+          <table class="table table-dark table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">Title</th>
+                <th scope="col">Due Date</th>
+                <th scope="col">Checked Out To</th>
+                <th scope="col">User Email</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% for(let i = 0; i < items.length; i++){ %>
+                <tr>
+                  <th scope="row"><%=items[i].item_title%></th>
+                  <td><%=items[i].item_due_date.toLocaleDateString("en-US")%></td>
+                  <td><%=items[i].user_fname%> <%=items[i].user_lname%></td>
+                  <td><%=items[i].user_email%></td>
+                </tr>
+                <% } %>
+            </tbody>
+            </table>
+          <% } %>
+      </div>
+    </section>
 
 
   </body>
