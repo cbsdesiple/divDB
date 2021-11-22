@@ -23,7 +23,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 client.connect();
 
 //setup for creating CSV file
-const ws = fs.createWriteStream("overdue_items.csv");
+
 
 //Enable and Configure Passport
 // var passport = require('passport')
@@ -51,15 +51,14 @@ app.get("/", (req, res)=>{
       console.log(err.stack)
     } else {
       items = (result.rows);
+      // const ws = fs.createWriteStream("overdue_items.csv");
       // csv.write(items, {headers:true}).pipe(ws)
       // .on("finish", function() {
       //   console.log(`Postgres table overdue_items exported to CSV file successfully.`);
       // });
       res.render("index", {items:items});
-
     }
   })
-
 })
 
 
@@ -77,6 +76,23 @@ app.post("/checkout", (req, res)=>{
     } else {
       items = (result.rows);
       res.render("search", {items:items})
+    }
+  })
+})
+
+app.get("/add_subject", (req, res)=>{
+  res.render("add_subject")
+})
+
+app.post("/add_subject", (req, res)=>{
+  const text = "INSERT INTO subjects VALUES($1);"
+  const values = [req.body.subject]
+  client.query(text, values, (err, result) => {
+    if (err) {
+      console.log(err.stack)
+    } else {
+      items = (result.rows);
+      res.render("success")
     }
   })
 })
