@@ -1,31 +1,32 @@
 <%- include("partials/header") %>
-    <h1>Add Item</h1>
-    <form action="/add_item" method="POST">
+    <h1>Edit Item</h1>
+    <form action="/edit_item" method="POST">
       <div class="form-row">
         <div class="form-group col-md-12">
           <label for="title">Title</label>
-          <input type="text" class="form-control" id="title" name="title">
+          <input type="text" class="form-control" id="title" name="title" value = "<%=item.item_title%>">
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group col-md-5">
           <label for="speakerfname">Speaker First Name</label>
-          <input type="text" class="form-control" id="speakerfname" name="fname">
+          <input type="text" class="form-control" id="speakerfname" name="fname" value = "<%=item.item_speaker_fname%>">
         </div>
         <div class="form-group col-md-5">
           <label for="speakerlname">Speaker Last Name</label>
-          <input type="text" class="form-control" id="speakerlname" name="lname">
+          <input type="text" class="form-control" id="speakerlname" name="lname" value ="<%=item.item_speaker_lname%>">
         </div>
         <div class="form-group col-md-2">
           <label for="suffix">Suffix</label>
           <select id="suffix" class="form-control" name="suffix">
-          <option selected> </option>
+          <option selected><%=item.item_speaker_suffix%> </option>
             <option>Jr.</option>
             <option>Sr.</option>
             <option>II</option>
             <option>III</option>
             <option>IV</option>
+            <option></option>
           </select>
         </div>
       </div>
@@ -33,7 +34,7 @@
       <div class="form-row">
         <div class="form-group col-md-6">
           <label for="event">Event/Location</label>
-          <input class=" form-control" list="events" id="event" name="event" />
+          <input class=" form-control" list="events" id="event" name="event" value="<%=item.item_location_event%>">
           <datalist id="events">
             <% for(let i = 0; i < events.length; i++){ %>
               <option><%=events[i].item_location_event%></option>
@@ -43,7 +44,7 @@
         <div class="form-group col-md-6">
           <label for="subject">Subject</label>
           <select id="subject" class="form-control" name="subject">
-            <option selected>Choose...</option>
+            <option selected><%=item.item_subject%></option>
             <% for(let i = 0; i < subjects.length; i++){ %>
               <option><%=subjects[i].subject%></option>
             <% } %>
@@ -54,12 +55,12 @@
       <div class="form-row">
         <div class="form-group col-md-2">
           <label for="barcode">Barcode</label>
-          <input type="text" class="form-control" id="barcode" name="barcode">
+          <input type="text" class="form-control" id="barcode" name="barcode" value="<%=item.item_barcode%>">
         </div>
         <div class="form-group col-md-2">
           <label for="mediaType">Media Type</label>
           <select id="mediaType" class="form-control" name="mediaType">
-            <option selected>Choose...</option>
+            <option selected><%=item.item_media_type%></option>
             <% for(let i = 0; i < mediaTypes.length; i++){ %>
               <option><%=mediaTypes[i].media_type%></option>
             <% } %>
@@ -67,14 +68,14 @@
         </div>
         <div class="form-group col-md-2">
           <label for="date">Event Date</label>
-            <input type="date" class="form-control" id="date" name="date">
+            <input type="date" class="form-control" id="date" name="date" value="<%=item.item_date%>">
           </div>
         </div>
 
 
         <div class="form-row">
           <div class="col-md-12">
-            <button type="submit" class="btn btn-light">Add Item</button>
+            <button type="submit" class="btn btn-light">Update Item</button>
           </div>
         </div>
       </form>

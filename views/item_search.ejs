@@ -1,10 +1,10 @@
 <%- include("partials/header") %>
-    <h1>Divinity Library Returns</h1>
+    <h1>Items Search</h1>
             <!-- Makes POST request to /return route -->
-            <form action="/return" method="POST">
+            <form action="/item_search" method="POST">
               <div class="form-group">
-                <label for="search">Barcode</label>
-                <input type="search" class="form-control" name="barcode">
+                <label for="search">Barcode or Part of Title</label>
+                <input type="search" class="form-control" name="search">
               </div>
               <button type="submit" class="btn btn-light">Search</button>
             </form>

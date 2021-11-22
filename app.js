@@ -1,3 +1,4 @@
+//Required packages
 const express = require("express");
 const bodyParser = require('body-parser')
 const { Client } = require('pg')
@@ -80,19 +81,80 @@ app.post("/checkout", (req, res)=>{
   })
 })
 
-app.get("/return", (req, res)=>{
-  res.render("return");
+app.get("/item_search", (req, res)=>{
+  res.render("item_search");
 })
 
-app.post("/return", (req, res) => {
-  const text = "SELECT * FROM items WHERE barcode = $1"
-  const values = [req.body.barcode]
+app.post("/item_search", (req, res) => {
+  const text = "SELECT item_title, item_barcode, item_due_date FROM items WHERE item_barcode = $1 or  item_title ILIKE $2"
+  const values = [req.body.search, "%" + req.body.search + "%"]
+  client.query(text, values, (err, result) => {
+    if (err) {
+      console.log(err.stack)
+    } else {
+      items = (result.rows);
+      res.render("item_search_results", {items:items})
+    }
+  })
+})
+
+
+app.get("/item_management", (req,res)=>{
+  res.render("item_management")
+})
+
+app.get("/items/:item_barcode", (req, res) =>{
+  client.query("SELECT DISTINCT item_location_event FROM items ORDER BY item_location_event ASC;", (err, result) => {
+    if (err) {
+      console.log(err.stack)
+    } else {
+      var events = (result.rows);
+      client.query("SELECT * FROM subjects ORDER BY subject;", (err, result) => {
+        if(err){
+          console.log(err.stack)
+        } else {
+          var subjects = (result.rows)
+          client.query("SELECT * FROM media_type;", (err, result) => {
+            if(err){
+              console.log(err.stack)
+            } else {
+              var mediaTypes = (result.rows)
+              const text = "SELECT item_title, item_speaker_fname, item_speaker_lname, item_speaker_suffix, item_location_event, item_subject, item_barcode, item_media_type, item_date FROM items WHERE item_barcode = $1;"
+              const values = [req.params.item_barcode];
+              client.query(text, values, (err,result) =>{
+                if(err) {
+                  console.log(err.stack)
+                } else {
+                  var item = (result.rows[0]);
+                  res.render("item_edit", {events:events, subjects:subjects, mediaTypes:mediaTypes, item:item} )
+                }
+              })
+            }
+          })
+        }
+      })
+    }
+  })
+})
+
+app.post("/edit_item", (req, res) => {
+  var title = req.body.title
+  var fname = req.body.fname
+  var lname = req.body.lname
+  var suffix = req.body.suffix
+  var eventLocation = req.body.event
+  var barcode = req.body.barcode
+  var mediaType = req.body.mediaType
+  var date = req.body.date
+  var subject = req.body.subject
+  const text = "UPDATE items SET item_title = $1, item_speaker_fname = $2, item_speaker_lname = $3, item_speaker_suffix = $4, item_location_event = $5, item_media_type = $7, item_date = $8, item_subject = $9 WHERE item_barcode = $6;"
+  const values = [title, fname, lname, suffix, eventLocation, barcode, mediaType, date, subject]
   client.query(text, values, (err, result) => {
     if (err) {
       console.log(err.stack)
     } else {
       item = (result.rows[0]);
-      res.render("item", {item:item})
+      res.render("success")
     }
   })
 })
@@ -123,6 +185,7 @@ app.get("/add_item", (req, res) => {
 })
 
 
+
 app.post("/add_item", (req, res) => {
   var title = req.body.title
   var fname = req.body.fname
@@ -140,7 +203,7 @@ app.post("/add_item", (req, res) => {
       console.log(err.stack)
     } else {
       item = (result.rows[0]);
-      res.send("<h1>success</h1>")
+      res.render("success")
     }
   })
 })
@@ -174,7 +237,7 @@ app.post("/add_user", (req,res) => {
       console.log(err.stack)
     } else {
       item = (result.rows[0]);
-      res.send("<h1>success</h1>")
+      res.render("success")
     }
   })
 })
@@ -198,8 +261,7 @@ app.get("/users/:user_student_id", (req,res)=>{
       console.log(err.stack)
     } else {
       user = (result.rows);
-      console.log(user)
-      res.render("user", {user:user, values:values})
+        res.render("user", {user:user, values:values})
     }
   })
 })
