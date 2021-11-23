@@ -22,8 +22,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 //connect to postgres
 client.connect();
 
-//setup for creating CSV file
-
 
 //Enable and Configure Passport
 // var passport = require('passport')
@@ -212,14 +210,70 @@ app.post("/add_item", (req, res) => {
   var mediaType = req.body.mediaType
   var date = req.body.date
   var subject = req.body.subject
-  const text = "INSERT INTO items (item_title, item_speaker_fname, item_speaker_lname, item_speaker_suffix, item_location_event, item_barcode, item_media_type, item_date, item_subject) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);"
-  const values = [title, fname, lname, suffix, eventLocation, barcode, mediaType, date, subject]
+  var item_add = {title: title, fname:fname, lname:lname, suffix:suffix, eventLocation:eventLocation, barcode:barcode, mediaType:mediaType, date:date, subject:subject}
+  const text = "SELECT item_barcode FROM items WHERE item_barcode = $1"
+  const values = [barcode]
   client.query(text, values, (err, result) => {
-    if (err) {
-      console.log(err.stack)
+    if (err){
+      res.send(err.stack)
     } else {
-      item = (result.rows[0]);
-      res.render("success")
+      if(result.rows[0].barcode = "") {
+        const text = "INSERT INTO items (item_title, item_speaker_fname, item_speaker_lname, item_speaker_suffix, item_location_event, item_barcode, item_media_type, item_date, item_subject) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);"
+        const values = [title, fname, lname, suffix, eventLocation, barcode, mediaType, date, subject]
+        client.query(text, values, (err, result) => {
+          if (err) {
+            console.log(err.stack)
+          } else {
+            item = (result.rows[0]);
+            res.render("success")
+          }
+        })
+      } else {
+        client.query("SELECT DISTINCT item_location_event FROM items ORDER BY item_location_event ASC;", (err, result) => {
+          if (err) {
+            console.log(err.stack)
+          } else {
+            var events = (result.rows);
+            client.query("SELECT * FROM subjects ORDER BY subject;", (err, result) => {
+              if(err){
+                console.log(err.stack)
+              } else {
+                var subjects = (result.rows)
+                client.query("SELECT * FROM media_type;", (err, result) => {
+                  if(err){
+                    console.log(err.stack)
+                  } else {
+                    var mediaTypes = (result.rows)
+                    res.render("add_to_collection", {events:events, subjects:subjects, mediaTypes:mediaTypes, item_add:item_add})
+                  }
+                })
+              }
+            })
+          }
+        })
+
+      }
+    }
+  })
+})
+
+app.post("/add_item_to_collection", (req, res)=>{
+  var title = req.body.title
+  var fname = req.body.fname
+  var lname = req.body.lname
+  var suffix = req.body.suffix
+  var eventLocation = req.body.event
+  var barcode = req.body.barcode
+  var mediaType = req.body.mediaType
+  var date = req.body.date
+  var subject = req.body.subject
+  const text = "INSERT INTO items_in_collection (pk_number, items_in_collections_title, items_in_collections_date, barcode, speaker_fname, speaker_lname, speaker_suffix, location_event, subject) VALUES ((SELECT MAX(pk_number) + 1 From items_in_collection), $1, $2, $3, $4, $5, $6, $7, $8);"
+  const values = [title, date, barcode, fname, lname, suffix, eventLocation, subject]
+  client.query(text, values, (err, result)=>{
+    if(err){
+      res.send(err.stack);
+    } else {
+      res.render("success");
     }
   })
 })
@@ -228,7 +282,7 @@ app.get("/add_user", (req, res) => {
   const text = "SELECT * FROM states;"
   client.query(text, (err, result) => {
     if (err) {
-      console.log(err.stack)
+      console.log(err.stack);
     } else {
       states = (result.rows);
       res.render("add_user", {states:states});
