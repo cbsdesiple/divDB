@@ -44,7 +44,8 @@ client.connect();
 
 //Get and Post Routes
 app.get("/", (req, res)=>{
-  client.query("SELECT item_title, item_due_date, user_fname, user_lname, user_email FROM items JOIN users ON user_student_id = item_checkedout_to WHERE item_due_date < current_date;", (err, result) => {
+  const text = "SELECT item_title, item_due_date, item_barcode, user_fname, user_lname, user_email FROM items JOIN users ON user_student_id = item_checkedout_to WHERE item_due_date < current_date AND item_is_archived = 'false';"
+  client.query(text, (err, result) => {
     if (err) {
       console.log(err.stack)
     } else {
@@ -59,7 +60,47 @@ app.get("/", (req, res)=>{
   })
 })
 
+app.get("/archive/:barcode", (req, res)=> {
+  const today = new Date(Date.now());
+  const values = [req.params.barcode, today]
+  const text = "UPDATE items SET item_is_archived = 'true', item_archive_date = $2 WHERE item_barcode = $1"
+  client.query(text, values, (err,result) =>{
+    if(err){
+      console.log(err.stach)
+    } else {
+      res.render("success")
+    }
+  })
+})
 
+app.get("/archived_item_search", (req, res)=> {
+  res.render("archived_item_search")
+})
+
+app.post("/archived_item_search", (req, res) => {
+  const text = "SELECT item_title, item_barcode, item_due_date, item_checkout_date FROM items WHERE (item_barcode = $1 OR item_title ILIKE $2) AND item_is_archived = 'true' ORDER BY item_title"
+  const values = [req.body.search, "%" + req.body.search + "%"]
+  client.query(text, values, (err, result) => {
+    if (err) {
+      console.log(err.stack)
+    } else {
+      items = (result.rows);
+      res.render("archived_item_search_results", {items:items})
+    }
+  })
+})
+
+app.get("/unarchive/:barcode", (req, res)=> {
+  const values = [req.params.barcode]
+  const text = "UPDATE items SET item_is_archived = 'false', item_archive_date = null WHERE item_barcode = $1"
+  client.query(text, values, (err,result) =>{
+    if(err){
+      console.log(err.stach)
+    } else {
+      res.render("success")
+    }
+  })
+})
 
 app.get("/checkout", (req, res)=>{
   res.render("checkout");
@@ -100,7 +141,7 @@ app.get("/item_search", (req, res)=>{
 })
 
 app.post("/item_search", (req, res) => {
-  const text = "SELECT item_title, item_barcode, item_due_date FROM items WHERE item_barcode = $1 or  item_title ILIKE $2"
+  const text = "SELECT item_title, item_barcode, item_due_date, item_checkout_date FROM items WHERE (item_barcode = $1 OR item_title ILIKE $2) AND item_is_archived = 'false' ORDER BY item_title"
   const values = [req.body.search, "%" + req.body.search + "%"]
   client.query(text, values, (err, result) => {
     if (err) {
@@ -111,7 +152,6 @@ app.post("/item_search", (req, res) => {
     }
   })
 })
-
 
 app.get("/item_management", (req,res)=>{
   res.render("item_management")
@@ -197,8 +237,6 @@ app.get("/add_item", (req, res) => {
     }
   })
 })
-
-
 
 app.post("/add_item", (req, res) => {
   var title = req.body.title

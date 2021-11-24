@@ -7,7 +7,7 @@
       <th scope="col">Title</th>
       <th scope="col">Barcode</th>
       <th scope="col">Due Date</th>
-      <th scope="col">Return?</th>
+      <th scope="col">unarchive?</th>
     </tr>
   </thead>
   <tbody>
@@ -17,7 +17,7 @@
         <td><a class="link" href="/items/<%=items[i].item_barcode%>"><%=items[i].item_barcode%></a></td>
         <% if (items[i].item_checkout_date) {%>
           <td><a class="link" href="/items/<%=items[i].item_barcode%>"><%=items[i].item_due_date.toLocaleDateString("en-US")%></a></td>
-          <td><a class="link" href="/return/<%=items[i].item_barcode%>">return</a></td>
+          <td><a class="link" href="/unarchive/<%=items[i].item_barcode%>">unarchive</a></td>
         <% } %>
       </tr>
     <% } %>

@@ -27,6 +27,8 @@
                 <th scope="col">Due Date</th>
                 <th scope="col">Checked Out To</th>
                 <th scope="col">User Email</th>
+                <th scope="col">Return?</th>
+                <th scope="col">Archive?</th>
               </tr>
             </thead>
             <tbody>
@@ -36,6 +38,8 @@
                   <td><%=items[i].item_due_date.toLocaleDateString("en-US")%></td>
                   <td><%=items[i].user_fname%> <%=items[i].user_lname%></td>
                   <td><%=items[i].user_email%></td>
+                  <td><a class="link" href="/return/<%=items[i].item_barcode%>">return</a></td>
+                  <td><a class="link" href="/archive/<%=items[i].item_barcode%>">archive</a></td>
                 </tr>
                 <% } %>
             </tbody>
