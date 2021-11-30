@@ -289,7 +289,6 @@ app.post("/add_item", (req, res) => {
             })
           }
         })
-
       }
     }
   })
@@ -326,7 +325,6 @@ app.get("/add_user", (req, res) => {
       res.render("add_user", {states:states});
     }
   })
-
 })
 
 app.post("/add_user", (req,res) => {
@@ -394,6 +392,19 @@ app.post("/users/:user_student_id", (req, res) => {
           res.render("user", {user:user, values:values})
         }
       })
+    }
+  })
+})
+
+app.get("/return/:barcode", (req, res)=>{
+  const values = [req.params.barcode];
+  const text = "UPDATE items SET item_checkedout_to = null, item_due_date = null, item_checkout_date = null, item_checkout_status = 'false' WHERE item_barcode = $1"
+  client.query(text, values, (err, result) => {
+    if (err) {
+      console.log(err.stack)
+    } else {
+      item = (result.rows[0]);
+      res.render("success")
     }
   })
 })
